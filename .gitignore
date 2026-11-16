@@ -1,0 +1,22 @@
+frontend/node_modules/
+frontend/dist/
+backend/public/
+backend/node_modules/
+backend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Never commit environment files or credentials
+.env
+.env.*
+!.env.example
+
+# IIS / Node logs on the live server
+logs/*
+!logs/.gitkeep
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+.npmrc

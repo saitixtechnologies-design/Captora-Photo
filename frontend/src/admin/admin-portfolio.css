@@ -1,0 +1,64 @@
+/* Admin → Portfolio page editor */
+.apf-tabs { display: flex; gap: 6px; margin: 4px 0 22px; padding: 5px; width: fit-content; border: 1px solid #e2ded6; border-radius: 99px; background: #fff; }
+.apf-tabs button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border: 0; border-radius: 99px; background: transparent; color: #6f6a61; font-size: 11px; font-weight: 600; cursor: pointer; }
+.apf-tabs button.is-active { background: #24231f; color: #f5f2eb; }
+
+.apf-editor { display: grid; gap: 18px; padding-bottom: 90px; }
+.apf-panel { border: 1px solid #e7e3db; border-radius: 10px; background: #fff; }
+.apf-panel > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 1px solid #f0ece5; }
+.apf-panel h3 { margin: 0; font-size: 14px; font-weight: 600; color: #2c2a25; }
+.apf-panel header p { margin: 5px 0 0; font-size: 11px; color: #8a847a; line-height: 1.6; }
+.apf-panel-body { display: grid; gap: 16px; padding: 18px 20px 20px; }
+
+.apf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.apf-field { display: grid; gap: 6px; color: #555149; font-size: 10px; font-weight: 600; }
+.apf-field input, .apf-field textarea, .apf-field select, .apf-list-row input { width: 100%; min-height: 40px; padding: 9px 11px; border: 1px solid #e2ded6; border-radius: 6px; outline: none; color: #2c2a25; background: #fff; font: inherit; font-size: 12px; font-weight: 400; }
+.apf-field textarea { resize: vertical; line-height: 1.6; }
+.apf-field input:focus, .apf-field textarea:focus, .apf-field select:focus, .apf-list-row input:focus { border-color: #a89676; }
+.apf-field small, .apf-photo small { color: #9a9489; font-size: 10px; font-weight: 400; }
+
+.apf-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; color: #555149; cursor: pointer; }
+.apf-toggle input { width: 16px; height: 16px; accent-color: #24231f; }
+
+.apf-photo { display: grid; gap: 8px; }
+.apf-photo-label { font-size: 10px; font-weight: 600; color: #555149; }
+.apf-photo-row { display: flex; align-items: center; gap: 14px; }
+.apf-photo-preview { display: grid; place-items: center; flex-shrink: 0; width: 92px; height: 92px; overflow: hidden; border: 1px dashed #d8d2c7; border-radius: 8px; color: #a59e92; background: #faf8f4; }
+.apf-photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.apf-photo-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+
+.apf-link-button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; border: 0; background: none; color: #7b6a50; font-size: 11px; font-weight: 600; cursor: pointer; }
+.apf-link-button:hover { color: #24231f; }
+
+.apf-list { display: grid; gap: 8px; }
+.apf-list-row { display: grid; grid-template-columns: 1fr 1.6fr auto; gap: 8px; align-items: center; }
+
+.apf-section { display: grid; gap: 14px; padding: 16px; border: 1px solid #ece8e1; border-radius: 8px; background: #fcfbf8; }
+.apf-section.is-hidden { opacity: .6; }
+.apf-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.apf-section-head strong { font-size: 12px; letter-spacing: .04em; color: #2c2a25; }
+.apf-section-tools { display: flex; align-items: center; gap: 6px; }
+.apf-section-tools .apf-toggle { margin-right: 8px; }
+
+.apf-savebar { position: sticky; bottom: 14px; z-index: 5; display: flex; align-items: center; gap: 16px; padding: 12px 14px 12px 20px; border: 1px solid #e2ded6; border-radius: 12px; background: rgba(255, 255, 255, .96); box-shadow: 0 14px 40px rgba(36, 35, 31, .14); }
+.apf-savebar > span { flex: 1; font-size: 11px; color: #6f6a61; }
+
+@media (max-width: 640px) {
+  .apf-tabs { width: 100%; }
+  .apf-tabs button { flex: 1; justify-content: center; }
+  .apf-list-row { grid-template-columns: 1fr auto; }
+  .apf-list-row input:first-child { grid-column: 1 / -1; }
+  .apf-savebar { flex-wrap: wrap; }
+  .apf-savebar > span { flex-basis: 100%; }
+}
+
+/* Shared editor pieces (Homepage + Portfolio) */
+.apf-panel.is-off > header { background: #faf8f4; }
+.apf-panel.is-off > .apf-panel-body { opacity: .55; }
+.apf-panel-aside { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.apf-items { display: grid; gap: 12px; }
+.apf-add { justify-self: start; }
+.apf-status { display: inline-flex; align-items: center; gap: 6px; margin-right: 6px; padding: 6px 12px; border: 1px solid #e2ded6; border-radius: 99px; background: #fff; color: #8a847a; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.apf-status.is-on { border-color: #b9d9c1; background: #eef8f0; color: #2f7a45; }
+.apf-link-input { width: 100%; min-width: 240px; min-height: 36px; padding: 7px 10px; border: 1px solid #e2ded6; border-radius: 6px; font: inherit; font-size: 12px; }
+.apf-photo-preview video { width: 100%; height: 100%; object-fit: cover; }

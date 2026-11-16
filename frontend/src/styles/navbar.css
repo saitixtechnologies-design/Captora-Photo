@@ -1,0 +1,97 @@
+/* Site header: dark glass bar with gold details. Height follows --captora-header-height (set in index.css). */
+.cn-header {
+  --cn-ink: #f3efe7;
+  --cn-muted: #b9b3a7;
+  --cn-gold: #c6aa7b;
+  --cn-line: rgba(243, 239, 231, .12);
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: var(--captora-header-height, 76px);
+  color: var(--cn-ink);
+  font-family: 'DM Sans', sans-serif;
+  transition: background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+}
+.cn-header *, .cn-header *::before, .cn-header *::after { box-sizing: border-box; }
+.cn-header a { color: inherit; text-decoration: none; }
+.cn-header.is-clear { background: linear-gradient(180deg, rgba(10, 10, 9, .55), transparent); }
+.cn-header.is-solid { background: rgba(16, 16, 14, .86); -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2); box-shadow: 0 10px 40px rgba(0, 0, 0, .25); }
+/* A backdrop-filter would trap the fixed mobile menu inside the bar, so it is off while the menu is open. */
+.cn-header.is-open { background: #10100e; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.cn-header.is-solid::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(198, 170, 123, .5), transparent); }
+
+.cn-shell { display: flex; align-items: center; gap: 36px; width: min(1440px, calc(100% - 80px)); height: 100%; margin: 0 auto; }
+
+/* Logo */
+.cn-logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.cn-logo-mark { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(198, 170, 123, .55); border-radius: 50%; color: var(--cn-gold); transition: transform .8s cubic-bezier(.2, .7, .2, 1), background .3s, color .3s; }
+.cn-logo:hover .cn-logo-mark { transform: rotate(120deg); background: var(--cn-gold); color: #141412; }
+.cn-logo-text { display: flex; flex-direction: column; gap: 3px; }
+.cn-logo-name { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; line-height: .95; letter-spacing: -.05em; }
+.cn-logo-name i { font-style: normal; color: var(--cn-gold); }
+/* em keeps this small brand caption out of the global text-size rule, which would make it wider than the logo. */
+.cn-logo-caption { font-size: .66em; font-weight: 600; letter-spacing: .26em; text-transform: uppercase; white-space: nowrap; color: var(--cn-muted); }
+
+/* Links */
+.cn-links { display: flex; align-items: center; justify-content: center; gap: clamp(22px, 2.6vw, 44px); margin: 0 auto; }
+.cn-link { position: relative; display: inline-flex; align-items: flex-start; gap: 5px; padding: 8px 0; font-size: 15px; font-weight: 500; letter-spacing: .04em; color: #e2ddd3; transition: color .25s ease; }
+.cn-link sup { font-size: 9px; font-weight: 600; letter-spacing: .06em; color: var(--cn-gold); opacity: .8; line-height: 1.6; }
+.cn-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--cn-gold); transform: scaleX(0); transform-origin: right; transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+.cn-link:hover { color: #fff; }
+.cn-link:hover::after, .cn-link.is-active::after { transform: scaleX(1); transform-origin: left; }
+.cn-link.is-active { color: var(--cn-gold); }
+
+/* Actions */
+.cn-actions { display: flex; align-items: center; gap: 22px; flex-shrink: 0; }
+.cn-phone { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--cn-muted); transition: color .25s; }
+.cn-phone svg { color: var(--cn-gold); }
+.cn-phone:hover { color: #fff; }
+.cn-book { display: inline-flex; align-items: center; gap: 12px; padding: 6px 6px 6px 22px; border-radius: 99px; background: var(--cn-gold); color: #141412 !important; font-size: 14px; font-weight: 600; letter-spacing: .04em; transition: background .3s ease, transform .3s ease; }
+.cn-book-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #141412; color: var(--cn-gold); transition: transform .4s ease; }
+.cn-book:hover { background: #d8be92; }
+.cn-book:hover .cn-book-icon { transform: rotate(45deg); }
+
+/* Mobile toggle */
+.cn-toggle { display: none; flex-shrink: 0; position: relative; width: 46px; height: 46px; margin-left: auto; padding: 0; border: 1px solid var(--cn-line); border-radius: 50%; background: transparent; cursor: pointer; }
+.cn-toggle span { position: absolute; left: 13px; right: 13px; height: 1.5px; background: var(--cn-ink); transition: transform .35s ease, top .35s ease; }
+.cn-toggle span:first-child { top: 18px; }
+.cn-toggle span:last-child { top: 26px; }
+.cn-header.is-open .cn-toggle span:first-child { top: 22px; transform: rotate(45deg); }
+.cn-header.is-open .cn-toggle span:last-child { top: 22px; transform: rotate(-45deg); }
+
+/* Mobile menu */
+.cn-menu { position: fixed; top: var(--captora-header-height, 76px); left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; padding: 18px 24px 28px; overflow-y: auto; background: #10100e; visibility: hidden; opacity: 0; transform: translateY(-12px); transition: opacity .35s ease, transform .35s ease, visibility .35s; }
+.cn-menu.is-open { visibility: visible; opacity: 1; transform: none; }
+.cn-menu-links { display: flex; flex-direction: column; }
+.cn-menu-link { display: flex; align-items: baseline; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--cn-line); font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 6vw, 27px); line-height: 1.2; letter-spacing: -.01em; color: var(--cn-ink); }
+/* Fixed width keeps every label lined up whatever the number; em keeps it out of the global text-size rule. */
+.cn-menu-link sup { flex: 0 0 24px; top: 0; font-family: 'DM Sans', sans-serif; font-size: .5em; font-weight: 600; letter-spacing: .08em; color: var(--cn-gold); }
+.cn-menu-link.is-active { color: var(--cn-gold); font-style: italic; }
+.cn-menu-foot { display: flex; flex-direction: column; gap: 14px; font-size: 16px; color: var(--cn-muted); }
+.cn-menu-foot > a:not(.cn-book) { display: inline-flex; align-items: center; gap: 10px; }
+.cn-menu-foot svg { color: var(--cn-gold); }
+/* Same compact pill as the other phone buttons, not a full-width bar. */
+.cn-book-wide { align-self: flex-start; width: auto; margin-bottom: 8px; padding: 4px 4px 4px 18px; gap: 10px; font-size: 14px; }
+.cn-book-wide .cn-book-icon { width: 34px; height: 34px; }
+.cn-menu-social { display: flex; gap: 10px; margin-top: 4px; }
+.cn-menu-social a { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--cn-line); border-radius: 50%; }
+.cn-menu-foot p { margin: 4px 0 0; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: #7f7a70; }
+
+@media (max-width: 1320px) {
+  .cn-phone { display: none; }
+}
+@media (max-width: 1120px) {
+  .cn-links, .cn-actions { display: none; }
+  .cn-toggle { display: block; }
+  .cn-shell { width: calc(100% - 40px); }
+}
+@media (max-width: 380px) {
+  .cn-logo-mark { width: 36px; height: 36px; }
+  .cn-logo-name { font-size: 26px; }
+  .cn-logo-caption { letter-spacing: .18em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cn-header *, .cn-header { transition: none !important; }
+}
