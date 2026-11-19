@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Aperture } from 'lucide-react'
 import '../../styles/preloader.css'
 
-const LOAD_MS = 1500 // focus + counter
-const SHUTTER_MS = 750 // flash and curtains opening
-const RING = 2 * Math.PI * 54 // circumference of the progress ring (r = 54)
+const DEVELOP_MS = 2300 // polaroid slides out and develops
+const EXIT_MS = 800 // polaroid is tossed aside and the curtain lifts
 
-// A camera viewfinder: the lens focuses while a ring fills to 100%, then the shutter fires and the curtains open.
+// An instant camera prints a polaroid: it slides out of the slot, the photo develops from dark to colour,
+// "captora." writes itself on the border, then the print is tossed aside and the curtain lifts onto the site.
 function Preloader() {
   const reduceMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   const [progress, setProgress] = useState(0)
-  const [phase, setPhase] = useState('focus')
+  const [phase, setPhase] = useState('develop')
 
   useEffect(() => {
     if (reduceMotion) {
@@ -18,22 +17,25 @@ function Preloader() {
       return () => window.clearTimeout(timer)
     }
     let frame
-    const start = performance.now()
+    let start = null
+    // The clock starts on the first painted frame, when the CSS animations start too,
+    // so the counter and the polaroid stay in step even while the page is busy loading.
     const tick = (now) => {
-      const t = Math.min((now - start) / LOAD_MS, 1)
-      setProgress(Math.round((1 - Math.pow(1 - t, 3)) * 100))
+      if (start === null) start = now
+      const t = Math.min((now - start) / DEVELOP_MS, 1)
+      setProgress(Math.round(t * t * (3 - 2 * t) * 100))
       if (t < 1) frame = requestAnimationFrame(tick)
-      else setPhase('shutter')
+      else setPhase('exit')
     }
     frame = requestAnimationFrame(tick)
     // Background tabs pause animation frames; this makes sure the loader always finishes.
-    const safety = window.setTimeout(() => { setProgress(100); setPhase((current) => (current === 'focus' ? 'shutter' : current)) }, LOAD_MS + 400)
+    const safety = window.setTimeout(() => { setProgress(100); setPhase((current) => (current === 'develop' ? 'exit' : current)) }, DEVELOP_MS + 1500)
     return () => { cancelAnimationFrame(frame); window.clearTimeout(safety) }
   }, [reduceMotion])
 
   useEffect(() => {
-    if (phase !== 'shutter') return undefined
-    const timer = window.setTimeout(() => setPhase('done'), SHUTTER_MS)
+    if (phase !== 'exit') return undefined
+    const timer = window.setTimeout(() => setPhase('done'), EXIT_MS)
     return () => window.clearTimeout(timer)
   }, [phase])
 
@@ -47,31 +49,17 @@ function Preloader() {
   if (phase === 'done') return null
 
   return (
-    <div className={'pl is-' + phase} role="status" aria-label="Loading Captora Photography and Films">
-      <div className="pl-curtain pl-curtain-top" />
-      <div className="pl-curtain pl-curtain-bottom" />
-      <div className="pl-flash" />
-
-      <div className="pl-stage">
-        <div className="pl-frame" aria-hidden="true"><i className="tl" /><i className="tr" /><i className="bl" /><i className="br" /></div>
-        <span className="pl-hud pl-hud-tl" aria-hidden="true"><b className="pl-rec" />REC</span>
-        <span className="pl-hud pl-hud-tr" aria-hidden="true">AF-C · 4K</span>
-        <span className="pl-hud pl-hud-bl" aria-hidden="true">f/1.8 · 1/250 · ISO 400</span>
-        <span className="pl-hud pl-hud-br" aria-hidden="true">{String(progress).padStart(3, '0')}%</span>
-
-        <div className="pl-center">
-          <div className="pl-lens" aria-hidden="true">
-            <span className="pl-focus" />
-            <svg viewBox="0 0 120 120" className="pl-ring">
-              <circle cx="60" cy="60" r="54" className="pl-ring-track" />
-              <circle cx="60" cy="60" r="54" className="pl-ring-fill" style={{ strokeDasharray: RING, strokeDashoffset: RING * (1 - progress / 100) }} />
-            </svg>
-            <Aperture className="pl-aperture" size={46} strokeWidth={1.1} style={{ transform: `rotate(${progress * 2.4}deg) scale(${0.82 + progress / 550})` }} />
+    <div className={'ld is-' + phase} role="status" aria-label="Loading Captora Photography and Films">
+      <div className="ld-curtain" />
+      <div className="ld-stage">
+        <div className="ld-camera" aria-hidden="true"><span className="ld-slot" /><span className="ld-lens" /><span className="ld-flash" /></div>
+        <figure className="ld-print" aria-hidden="true">
+          <div className="ld-photo" style={{ '--dev': progress / 100 }}>
+            <img src="/hero/hero-couple-sm.jpg" alt="" />
           </div>
-          <div className="pl-brand">captora<span>.</span></div>
-          <p className="pl-caption">Photography &amp; Films</p>
-          <p className="pl-status">{progress < 100 ? 'Focusing' : 'Captured'}</p>
-        </div>
+          <svg className="ld-sign" viewBox="0 0 300 70"><text x="150" y="52" textAnchor="middle">captora.</text></svg>
+        </figure>
+        <p className="ld-status" aria-hidden="true"><span>{progress < 100 ? 'Developing' : 'Ready'}</span><b>{String(progress).padStart(2, '0')}%</b></p>
       </div>
     </div>
   )
