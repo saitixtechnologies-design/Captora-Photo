@@ -5,7 +5,9 @@ import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Check, Heart, Play, Quo
 import { getPublicFeedback, getPublicGallery, getPublicServices } from '../admin/adminApi.js'
 import { sizedImage } from '../utils/media.js'
 import { getVideoPoster, getYouTubeEmbedUrl } from '../utils/youtube.js'
+import RitualStory from '../components/RitualStory.jsx'
 import '../../styles/wedding-editorial.css'
+import '../../styles/signature.css'
 
 // Used only until the studio's own wedding photos load from Admin → Gallery.
 const fallbackPhotos = [
@@ -165,6 +167,8 @@ export default function WeddingPhotography() {
         </article>)}
       </div>
     </section>
+
+    <RitualStory photos={photos.map((photo) => photo.src)} />
 
     <section className="wd-film" data-reveal>
       {weddingFilm

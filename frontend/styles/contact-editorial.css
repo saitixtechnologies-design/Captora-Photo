@@ -132,3 +132,23 @@
 /* Field errors */
 .ct-error { color: #b3261e; font-size: 13px; font-weight: 600; }
 .ct-form input[aria-invalid="true"] { border-color: #b3261e; box-shadow: 0 0 0 3px rgba(179, 38, 30, .12); }
+
+/* Sent: the letter goes into an envelope, the flap closes, it flies off, and a sticker lands */
+.ct-envelope { position: relative; width: 140px; height: 92px; margin: 6px 0 4px; animation: ct-fly .7s 1.5s cubic-bezier(.6, 0, .4, 1) forwards; }
+.ct-env-back, .ct-env-front, .ct-env-flap, .ct-env-letter { position: absolute; display: block; }
+.ct-env-back { inset: 0; border-radius: 6px; background: #d9c39a; }
+.ct-env-letter { left: 12px; right: 12px; bottom: 14px; height: 74px; padding: 10px; border-radius: 4px; background: #fff; color: #9b7d4e; font-size: 12px; font-weight: 800; box-shadow: 0 4px 10px rgba(0, 0, 0, .08); transform: translateY(-46px); animation: ct-letter .6s .2s ease forwards; }
+.ct-env-front { inset: 0; border-radius: 6px; background: linear-gradient(to top right, #e8d5ae 50%, transparent 50.5%) left / 50% 100% no-repeat, linear-gradient(to top left, #e8d5ae 50%, transparent 50.5%) right / 50% 100% no-repeat, linear-gradient(to top, #efe0bf 52%, transparent 52.5%); }
+.ct-env-flap { left: 0; right: 0; top: 0; height: 56px; background: linear-gradient(to bottom right, #cdb385 50%, transparent 50.5%) left / 50% 100% no-repeat, linear-gradient(to bottom left, #cdb385 50%, transparent 50.5%) right / 50% 100% no-repeat; transform-origin: top; transform: rotateX(180deg); animation: ct-flap .45s .85s ease forwards; z-index: 2; }
+@keyframes ct-letter { to { transform: translateY(0); } }
+@keyframes ct-flap { to { transform: rotateX(0deg); } }
+@keyframes ct-fly { 0% { transform: none; } 30% { transform: translateY(6px) rotate(-3deg); } 100% { opacity: 0; transform: translate(160px, -120px) rotate(14deg) scale(.6); } }
+.ct-sent-sticker { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border: 2px solid #1c1b18; border-radius: 99px; background: #f2c14e; color: #1c1b18; font-size: 15px; font-weight: 800; box-shadow: 3px 3px 0 #1c1b18; opacity: 0; transform: rotate(-8deg) scale(1.6); animation: ct-stick .45s 2s cubic-bezier(.3, 1.6, .5, 1) forwards; }
+.ct-sent-sticker svg { color: #1c1b18 !important; }
+@keyframes ct-stick { to { opacity: 1; transform: rotate(-4deg) scale(1); } }
+.ct-sent h3, .ct-sent > p, .ct-sent-actions { opacity: 0; animation: ct-in .5s 2.2s ease forwards; }
+@keyframes ct-in { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .ct-envelope { display: none; }
+  .ct-sent-sticker, .ct-sent h3, .ct-sent > p, .ct-sent-actions { animation: none; opacity: 1; transform: none; }
+}

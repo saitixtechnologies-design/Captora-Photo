@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { getPublicGallery } from '../admin/adminApi.js'
 import { sizedImage } from '../utils/media.js'
 import '../../styles/about-editorial.css'
+import '../../styles/signature.css'
 
 // Used until the studio's own photos load from the gallery.
 const fallback = {
@@ -55,6 +56,7 @@ export default function About() {
   const storyPhoto = pick(/^wedding$/i, 0) || fallback.story
   const detailPhoto = pick(/pre-?wedding|portrait/i, 1) || fallback.detail
   const quotePhoto = pick(/travel/i, 2) || fallback.quote
+  const tablePhotos = others.slice(3, 8).map((item) => ({ src: item.image, title: item.title }))
 
   return <main className="ab-page">
     <section className="ab-hero">
@@ -104,6 +106,16 @@ export default function About() {
         </div>
       </div>
     </section>
+
+    {tablePhotos.length >= 3 && <section className="sg-table" aria-label="A few favourite frames">
+      <div className="ab-wrap sg-table-head" data-reveal><p className="ab-eyebrow"><span />From the archive</p><h2>A few frames <em>we keep coming back to.</em></h2></div>
+      <div className="sg-table-surface">
+        {tablePhotos.map((photo, i) => <figure key={photo.src + i} className="sg-drop" data-reveal style={{ '--rot': `${[-8, 5, -3, 7, -5][i % 5]}deg`, '--x': `${[-34, -14, 4, 22, 38][i % 5]}%`, '--y': `${[8, -6, 10, -4, 6][i % 5]}%`, transitionDelay: `${i * 140}ms` }}>
+          <img src={sizedImage(photo.src, 600)} alt={photo.title || 'A favourite Captora frame'} loading="lazy" />
+          <figcaption>{photo.title}</figcaption>
+        </figure>)}
+      </div>
+    </section>}
 
     <section className="ab-quote" data-reveal>
       <img src={sizedImage(quotePhoto, 2000)} alt="" loading="lazy" />

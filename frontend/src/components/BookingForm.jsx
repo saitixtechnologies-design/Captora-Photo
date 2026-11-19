@@ -65,7 +65,10 @@ function BookingForm() {
 
   if (sent) {
     return <div className="ct-sent" role="status">
-      <CheckCircle2 size={44} strokeWidth={1.4} />
+      <div className="ct-envelope" aria-hidden="true">
+        <span className="ct-env-back" /><span className="ct-env-letter">Hello, Captora!</span><span className="ct-env-front" /><span className="ct-env-flap" />
+      </div>
+      <span className="ct-sent-sticker"><CheckCircle2 size={18} strokeWidth={2} /> Sent!</span>
       <h3>Thank you, {sent}.</h3>
       <p>Your enquiry has reached the Captora team. We will get back to you with availability and the next steps.</p>
       <div className="ct-sent-actions">

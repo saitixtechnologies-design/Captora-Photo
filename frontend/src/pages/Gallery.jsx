@@ -6,6 +6,7 @@ import { getPublicGallery } from '../admin/adminApi.js'
 import { getVideoPoster, getYouTubeEmbedUrl, getYouTubeThumbnail } from '../utils/youtube.js'
 import { sizedImage } from '../utils/media.js'
 import '../../styles/gallery-editorial.css'
+import '../../styles/signature.css'
 
 const heroSlides = [
   { src: '/hero/gallery-exhibition.jpg', label: 'THE EXHIBITION' },
@@ -100,6 +101,7 @@ export default function Gallery() {
   const photoCount = items.reduce((sum, item) => sum + (item.type === 'video' ? 0 : item.images?.length || 1), 0)
   const filmCount = items.filter((item) => item.type === 'video').length
   const film = items.find((item) => item.type === 'video' && item.video)
+  const stripPhotos = items.filter((item) => item.type !== 'video' && item.image).map((item) => item.image).slice(0, 14)
 
   function choose(next) {
     setCategory(next)
@@ -124,6 +126,14 @@ export default function Gallery() {
       <a href="#gl-collection" className="gl-scroll" aria-label="Go to the collection"><ArrowDown size={18} /></a>
     </section>
 
+    {stripPhotos.length > 3 && <div className="sg-strip" aria-hidden="true">
+      <div className="sg-strip-track">
+        {[0, 1].map((copy) => <div className="sg-strip-set" key={copy}>
+          {stripPhotos.map((src, i) => <figure key={copy + src + i} className="sg-frame"><img src={sizedImage(src, 360)} alt="" loading="lazy" /><figcaption>{String(i + 1).padStart(2, '0')}A</figcaption></figure>)}
+        </div>)}
+      </div>
+    </div>}
+
     <section className="gl-collection" id="gl-collection">
       <div className="gl-wrap gl-head">
         <div><p className="gl-eyebrow"><span />Browse the collection</p><h2>Stories, <em>frame by frame.</em></h2></div>
@@ -141,11 +151,11 @@ export default function Gallery() {
       </div>
 
       <div className="gl-wrap">
-        {shown.length > 0 ? <div className="gl-masonry" key={category}>
+        {shown.length > 0 ? <div className="gl-masonry sg-deal" key={category}>
           {shown.map((item, index) => {
             const isVideo = item.type === 'video'
             const photos = isVideo ? 0 : item.images?.length || 1
-            return <button type="button" key={item.id} className={'gl-card' + (item.size === 'tall' ? ' is-tall' : item.size === 'wide' ? ' is-wide' : '')} style={{ animationDelay: `${(index % PAGE) * 40}ms` }} onClick={() => setViewer(filtered.indexOf(item))} aria-label={`Open ${item.title}`}>
+            return <button type="button" key={item.id} className={'gl-card' + (item.size === 'tall' ? ' is-tall' : item.size === 'wide' ? ' is-wide' : '')} style={{ animationDelay: `${(index % PAGE) * 45}ms`, '--deal-r': `${((index * 7) % 11) - 5}deg`, '--deal-x': `${((index * 13) % 9) - 4}0px` }} onClick={() => setViewer(filtered.indexOf(item))} aria-label={`Open ${item.title}`}>
               {isVideo && item.video && !getYouTubeEmbedUrl(item.video)
                 ? <video src={item.video} poster={sizedImage(getVideoPoster(item), 800) || undefined} muted autoPlay loop playsInline preload="metadata" />
                 : <img src={imageOf(item, 900)} alt={item.title} loading="lazy" />}

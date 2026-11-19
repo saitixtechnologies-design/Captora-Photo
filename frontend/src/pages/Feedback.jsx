@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Star, X } from 'lucide-react'
 import { toast } from 'react-toastify'
 import { isValidEmail } from '../utils/validation.js'
+import { getPublicFeedback } from '../admin/adminApi.js'
+import { sizedImage } from '../utils/media.js'
+import '../../styles/signature.css'
 
 export default function Feedback() {
   const [rating, setRating] = useState(5)
@@ -10,6 +13,12 @@ export default function Feedback() {
   const [sending, setSending] = useState(false)
   const fileRef = useRef(null)
   const formRef = useRef(null)
+  const [wall, setWall] = useState([])
+  useEffect(() => {
+    let active = true
+    getPublicFeedback().then((items) => { if (active) setWall(items.slice(0, 12)) }).catch(() => {})
+    return () => { active = false }
+  }, [])
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
 
@@ -81,6 +90,20 @@ export default function Feedback() {
           <p className="feedback-review-note">Feedback is reviewed by the Captora team before appearing publicly.</p>
         </form>
       </section>
+
+      {wall.length > 0 && <section className="sg-wall" aria-label="Kind words from Captora clients">
+        <div className="wrap sg-wall-head"><p className="eyebrow">KIND WORDS, PINNED UP</p><h2>Notes from the people <em>we photographed.</em></h2></div>
+        <div className="sg-wall-line" aria-hidden="true" />
+        <div className="sg-wall-row">
+          {wall.map((item, i) => <figure key={item.id || i} className="sg-note" style={{ '--sway': `${(i % 2 ? 1 : -1) * (2 + (i % 3))}deg`, '--delay': `${(i % 5) * -0.7}s` }}>
+            <span className="sg-pin" aria-hidden="true" />
+            {item.image_url ? <img src={sizedImage(item.image_url, 500)} alt="" loading="lazy" /> : <span className="sg-note-initial" aria-hidden="true">{(item.name || 'C').slice(0, 1)}</span>}
+            <div className="sg-note-stars" aria-label={`${item.rating || 5} out of 5 stars`}>{Array.from({ length: 5 }, (_, k) => <Star key={k} size={13} fill={k < (item.rating || 5) ? 'currentColor' : 'none'} />)}</div>
+            <blockquote>{item.message}</blockquote>
+            <figcaption>— {item.name}</figcaption>
+          </figure>)}
+        </div>
+      </section>}
     </div>
   )
 }

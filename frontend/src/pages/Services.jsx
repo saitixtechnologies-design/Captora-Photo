@@ -4,8 +4,9 @@ import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Check, Clock, Expand, H
 import { Link } from 'react-router'
 import { getPublicServices } from '../admin/adminApi.js'
 import { sizedImage } from '../utils/media.js'
-import { getVideoPoster, getYouTubeEmbedUrl } from '../utils/youtube.js'
+import { getVideoPoster, getYouTubeBackgroundUrl, getYouTubeEmbedUrl } from '../utils/youtube.js'
 import '../../styles/services-editorial.css'
+import '../../styles/signature.css'
 
 const heroSlides = [
   { src: '/hero/services-film.jpg', label: 'ON SET · THE WEDDING FILM' },
@@ -66,10 +67,10 @@ function ServiceRow({ service, index }) {
   const embed = isVideo && getYouTubeEmbedUrl(service.video)
   const move = (step) => setPhoto((current) => (current + step + photos.length) % photos.length)
 
-  return <article className={'sv-row' + (index % 2 ? ' is-flipped' : '')} id={slug(service.title)}>
+  return <article className={'sv-row' + (index % 2 ? ' is-flipped' : '')} id={slug(service.title)} style={{ '--i': index }}>
     <div className="sv-media">
       {isVideo
-        ? (embed ? <img src={sizedImage(getVideoPoster({ video: service.video, image: service.image }), 1200)} alt={service.title} loading="lazy" /> : <video src={service.video || service.image} muted autoPlay loop playsInline preload="metadata" aria-label={service.title} />)
+        ? (embed ? <><img src={sizedImage(getVideoPoster({ video: service.video, image: service.image }), 1200)} alt={service.title} loading="lazy" />{getYouTubeBackgroundUrl(service.video) && <iframe className="sv-media-embed" src={getYouTubeBackgroundUrl(service.video)} title={service.title} allow="autoplay; encrypted-media; picture-in-picture" tabIndex={-1} aria-hidden="true" />}</> : <video src={service.video || service.image} muted autoPlay loop playsInline preload="metadata" aria-label={service.title} />)
         : photos.map((src, i) => <img key={src + i} className={'sv-media-photo' + (i === photo ? ' is-active' : '')} src={sizedImage(src, 1200)} alt={`${service.title}, photo ${i + 1}`} loading="lazy" />)}
       <span className="sv-media-num">{String(index + 1).padStart(2, '0')}</span>
       {!isVideo && photos.length > 0 && <button type="button" className="sv-media-open" onClick={() => setViewer(photo)} aria-label={'View photos for ' + service.title}><Expand size={18} /></button>}
