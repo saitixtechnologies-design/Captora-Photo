@@ -20,7 +20,8 @@ export default function AdminProfilePhoto() {
     } catch (error) { toast.error(error.message) }
     finally { setLoading(false) }
   }
-  useEffect(() => { load() }, [])
+  // Load once the page has rendered; state updates then happen in the request callback, not during the effect.
+  useEffect(() => { Promise.resolve().then(load) }, [])
   useEffect(() => () => { if (preview.startsWith('blob:')) URL.revokeObjectURL(preview) }, [preview])
 
   function choosePhoto(event) {

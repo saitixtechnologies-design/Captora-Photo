@@ -22,7 +22,8 @@ export default function AdminEnquiries() {
     }
   }, [])
 
-  useEffect(() => { loadItems() }, [loadItems])
+  // Load once the page has rendered; state updates then happen in the request callback, not during the effect.
+  useEffect(() => { Promise.resolve().then(loadItems) }, [loadItems])
 
   async function toggleRead(item) {
     const status = item.status === 'read' ? 'new' : 'read'

@@ -19,7 +19,8 @@ export default function AdminFeedback() {
     } catch (error) { toast.error(error.message) }
     finally { setLoading(false) }
   }, [])
-  useEffect(() => { loadItems() }, [loadItems])
+  // Load once the page has rendered; state updates then happen in the request callback, not during the effect.
+  useEffect(() => { Promise.resolve().then(loadItems) }, [loadItems])
 
   async function toggleActive(item) {
     try {
