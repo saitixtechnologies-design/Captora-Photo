@@ -62,3 +62,4 @@
 .apf-status.is-on { border-color: #b9d9c1; background: #eef8f0; color: #2f7a45; }
 .apf-link-input { width: 100%; min-width: 240px; min-height: 36px; padding: 7px 10px; border: 1px solid #e2ded6; border-radius: 6px; font: inherit; font-size: 12px; }
 .apf-photo-preview video { width: 100%; height: 100%; object-fit: cover; }
+.apf-note { margin: 0; padding: 10px 14px; border-radius: 8px; background: #f6f1e7; color: #6f6a61; font-size: 13px; }

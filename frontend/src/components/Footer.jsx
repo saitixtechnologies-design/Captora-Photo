@@ -1,10 +1,8 @@
+import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaYoutube } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import { Link } from 'react-router'
-import { useEffect, useState } from 'react'
-import { getPublicGallery } from '../admin/adminApi.js'
-import { sizedImage } from '../utils/media.js'
 import '../../styles/footer.css'
 
 const explore = [
@@ -14,13 +12,11 @@ const explore = [
   { to: '/services', label: 'Services' },
   { to: '/about', label: 'About' },
 ]
-
 const studio = [
   { to: '/work/wedding-photography', label: 'Wedding Photography' },
-  { to: '/contact', label: 'Contact' },
   { to: '/feedback', label: 'Client Feedback' },
+  { to: '/contact', label: 'Contact' },
 ]
-
 const socials = [
   { href: 'https://www.instagram.com/', label: 'Instagram', icon: FaInstagram },
   { href: 'https://www.youtube.com/@Captora', label: 'YouTube', icon: FaYoutube },
@@ -28,92 +24,80 @@ const socials = [
   { href: 'https://twitter.com/captora', label: 'X (Twitter)', icon: FaXTwitter },
 ]
 
-// Used until the studio's own wedding photo loads from the gallery.
-const fallbackPhoto = 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=85'
+// The giant script wordmark draws itself (stroke first, then fill) when it scrolls into view.
+function useInView(ref) {
+  const [seen, setSeen] = useState(() => typeof window === 'undefined' || !('IntersectionObserver' in window))
+  useEffect(() => {
+    const el = ref.current
+    if (!el || seen) return undefined
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setSeen(true); observer.disconnect() } }, { threshold: 0.35 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [ref, seen])
+  return seen
+}
 
 function Footer() {
   const year = new Date().getFullYear()
-  const [photo, setPhoto] = useState(fallbackPhoto)
-
-  useEffect(() => {
-    let active = true
-    getPublicGallery().then((items) => {
-      const photos = items.filter((item) => item.type !== 'video' && item.image && item.category !== 'Photographer Portrait')
-      const pick = photos.find((item) => /wedding/i.test(item.category)) || photos[0]
-      if (active && pick) setPhoto(pick.image)
-    }).catch(() => {})
-    return () => { active = false }
-  }, [])
+  const markRef = useRef(null)
+  const drawn = useInView(markRef)
 
   return (
-    <footer className="cf-footer">
-      <section className="cf-shot" aria-labelledby="cf-shot-title">
-        <img className="cf-shot-bg" src={sizedImage(photo, 2000)} alt="" loading="lazy" />
-        <div className="cf-shot-shade" aria-hidden="true" />
-        <div className="cf-viewfinder" aria-hidden="true">
-          <i className="tl" /><i className="tr" /><i className="bl" /><i className="br" />
-          <span className="cf-hud cf-hud-tl"><b className="cf-rec" />REC</span>
-          <span className="cf-hud cf-hud-tr">4K · 24 FPS</span>
-          <span className="cf-hud cf-hud-bl">ISO 400 · f/1.8 · 1/250</span>
-          <span className="cf-hud cf-hud-br">CAPTORA · LUCKNOW</span>
-          <span className="cf-focus" />
-        </div>
-        <div className="cf-shot-copy">
-          <p className="cf-eyebrow"><span />Have a story in mind?<span /></p>
-          <h2 id="cf-shot-title">Let’s make something <em>that stays.</em></h2>
-          <p className="cf-cta-text">Weddings, portraits, films and brand stories — tell us what you are planning and we will shape the shoot around it.</p>
-          <div className="cf-shot-actions">
-            <Link to="/contact#enquiry" className="cf-btn cf-btn-gold">Plan your shoot <ArrowUpRight size={18} /></Link>
-            <a href="https://wa.me/917084861647" target="_blank" rel="noreferrer" className="cf-btn cf-btn-ghost"><FaWhatsapp size={18} /> Chat on WhatsApp</a>
+    <footer className="sf">
+      <div className="sf-frame">
+        <div className="sf-top">
+          <Link to="/" className="sf-logo" aria-label="Captora home"><span className="sf-script">Captora</span><small>Photography &amp; Films</small></Link>
+          <div className="sf-stickers">
+            <a className="sf-bubble" href="https://wa.me/917084861647" target="_blank" rel="noreferrer">
+              <FaWhatsapp size={18} /> Say hi on WhatsApp
+            </a>
+            <Link to="/contact" className="sf-star" aria-label="Book a shoot">
+              <svg viewBox="0 0 200 200" aria-hidden="true" className="sf-star-shape">
+                <path d="M100 4l14 30 31-12 1 33 33 3-13 31 28 19-28 19 13 31-33 3-1 33-31-12-14 30-14-30-31 12-1-33-33-3 13-31-28-19 28-19-13-31 33-3 1-33 31 12z" />
+              </svg>
+              <span className="sf-star-text">Book<br />a shoot<ArrowUpRight size={18} /></span>
+            </Link>
           </div>
         </div>
-      </section>
 
-      <div className="cf-wrap">
+        <h2 className="sf-headline">Have a story in mind? <em>Let’s make something that stays.</em></h2>
 
-        <section className="cf-columns">
-          <div className="cf-brand-col">
-            <Link to="/" className="cf-brand">captora<span>.</span></Link>
-            <p className="cf-tagline">Photographs &amp; films for the moments that matter.</p>
-            <p className="cf-place"><MapPin size={17} strokeWidth={1.6} /> Lucknow, Uttar Pradesh · India</p>
-          </div>
-
-          <nav className="cf-col" aria-label="Explore">
+        <div className="sf-panel">
+          <div className="sf-col">
             <h3>Explore</h3>
             {explore.map((link) => <Link key={link.to} to={link.to}>{link.label}</Link>)}
-          </nav>
-
-          <nav className="cf-col" aria-label="Studio">
+          </div>
+          <div className="sf-col">
             <h3>Studio</h3>
             {studio.map((link) => <Link key={link.to} to={link.to}>{link.label}</Link>)}
-          </nav>
-
-          <div className="cf-col cf-contact-col">
+          </div>
+          <div className="sf-col sf-contact">
             <h3>Get in touch</h3>
-            <a href="tel:+917084861647"><Phone size={17} strokeWidth={1.6} />+91 70848 61647</a>
-            <a href="mailto:captoraphotography@gmail.com"><Mail size={17} strokeWidth={1.6} />captoraphotography@gmail.com</a>
-            <a href="https://wa.me/917084861647" target="_blank" rel="noreferrer"><FaWhatsapp size={17} />WhatsApp us</a>
-            <div className="cf-socials">
-              {socials.map(({ href, label, icon: Icon }) => (
-                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={'Captora on ' + label} title={label}><Icon size={17} /></a>
-              ))}
+            <a href="tel:+917084861647"><Phone size={16} />+91 70848 61647</a>
+            <a href="mailto:captoraphotography@gmail.com"><Mail size={16} />captoraphotography@gmail.com</a>
+            <span><MapPin size={16} />Lucknow, Uttar Pradesh · India</span>
+          </div>
+          <div className="sf-col">
+            <h3>Follow</h3>
+            <div className="sf-socials">
+              {socials.map(({ href, label, icon: Icon }) => <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={'Captora on ' + label} title={label}><Icon size={17} /></a>)}
             </div>
           </div>
-        </section>
-      </div>
+        </div>
 
-      <div className="cf-giant" aria-hidden="true">CAPTORA</div>
+        <div className={'sf-mark' + (drawn ? ' is-drawn' : '')} ref={markRef} aria-hidden="true">
+          <svg viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet">
+            <text x="600" y="215" textAnchor="middle">Captora</text>
+          </svg>
+        </div>
 
-      <div className="cf-wrap">
-        <div className="cf-bottom">
-          <span>© {year} Captora Photography &amp; Films. All rights reserved.</span>
-          <div className="cf-legal">
+        <div className="sf-bottom">
+          <span>© {year} Captora Photography &amp; Films</span>
+          <div className="sf-legal">
             <Link to="/privacy-policy">Privacy Policy</Link>
             <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
           </div>
-          <button type="button" className="cf-top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            Back to top <ArrowUp size={16} />
-          </button>
+          <button type="button" className="sf-top-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top <ArrowUp size={15} /></button>
         </div>
       </div>
     </footer>

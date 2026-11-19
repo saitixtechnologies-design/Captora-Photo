@@ -18,7 +18,7 @@ export const stepIcons = [
 export const defaultHomeContent = {
   hero: {
     show: true,
-    mode: 'slides',
+    mode: 'tunnel',
     eyebrow: 'Captora Photography & Films · Lucknow',
     title: 'For the moments\nthat *become* memories.',
     text: 'Weddings, portraits and films — told honestly, warmly and beautifully, across Lucknow and beyond.',

@@ -245,3 +245,36 @@
 @media (prefers-reduced-motion: reduce) {
   .hm-page *, .hm-page [data-reveal] { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
 }
+
+/* ===== 3D photo tunnel hero (Admin → Homepage → Hero → "3D photo tunnel") ===== */
+.tn { position: relative; height: 320svh; background: radial-gradient(ellipse at center, #1d1a14 0%, #0d0d0b 70%); color: var(--hm-ink); }
+.tn-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; perspective: 900px; perspective-origin: 50% 50%; }
+.tn-scene { position: absolute; inset: 0; transform-style: preserve-3d; }
+.tn-card { position: absolute; top: 50%; left: 50%; width: clamp(130px, 17vw, 250px); aspect-ratio: 4 / 5; margin: 0; padding: 6px 6px 22px; background: #f4f1ea; box-shadow: 0 30px 60px rgba(0, 0, 0, .55); opacity: 0; will-change: transform, opacity; backface-visibility: hidden; }
+.tn-card img { width: 100%; height: 100%; object-fit: cover; }
+.tn-vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, rgba(13, 13, 11, .78) 0%, rgba(13, 13, 11, .35) 38%, transparent 70%); }
+.tn-copy { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 120px 24px 80px; text-align: center; will-change: transform, opacity; }
+.tn-copy .hm-eyebrow { justify-content: center; color: var(--hm-gold); }
+.tn-copy h1 { max-width: 900px; margin: 0; text-shadow: 0 10px 40px rgba(0, 0, 0, .6); }
+.tn-copy h1 em { font-style: italic; color: var(--hm-gold); }
+.tn-copy .hm-hero-text { margin-inline: auto; text-shadow: 0 4px 20px rgba(0, 0, 0, .7); }
+.tn-copy .hm-hero-actions { justify-content: center; }
+.tn-hint { position: absolute; left: 50%; bottom: 26px; z-index: 2; display: inline-flex; align-items: center; gap: 8px; color: #d9d3c7; font-size: 13px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; transform: translateX(-50%); }
+.tn-hint svg { animation: hm-bob 2s ease-in-out infinite; }
+.tn.is-static { height: auto; }
+.tn.is-static .tn-sticky { position: relative; height: auto; min-height: 100svh; }
+.tn.is-static .tn-card { display: none; }
+@media (max-width: 640px) {
+  .tn { height: 260svh; }
+  .tn-card { width: 118px; padding: 4px 4px 16px; }
+  .tn-hint { font-size: 11px; }
+}
+
+/* ===== Warp carousel (Selected work) ===== */
+.hm-work .hm-strip { scroll-snap-type: x proximity; padding-block: 30px 40px; cursor: grab; }
+.hm-work .hm-strip.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+.hm-work .hm-strip.is-dragging a { pointer-events: none; }
+.hm-work .hm-frame { transform-origin: center center; transition: filter .2s linear; will-change: transform; }
+.hm-work .hm-frame:nth-child(even) { margin-top: 0; }
+.hm-work .hm-frame-img { box-shadow: 0 30px 60px rgba(0, 0, 0, .45); }
+.hm-work .hm-frame img { -webkit-user-drag: none; user-select: none; }

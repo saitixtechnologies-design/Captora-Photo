@@ -63,7 +63,7 @@ export default function AdminHome() {
     <div className="apf-editor">
       <Panel title="1 · Hero (top of the page)" subtitle="Full-screen photos that change slowly, or one background video." show={hero.show} onShow={set('hero', 'show')}>
         <div className="apf-grid">
-          <Select label="Background" value={hero.mode} onChange={set('hero', 'mode')} options={[{ value: 'slides', label: 'Photo slideshow' }, { value: 'video', label: 'Background video' }]} />
+          <Select label="Background" value={hero.mode} onChange={set('hero', 'mode')} options={[{ value: 'tunnel', label: '3D photo tunnel (scroll)' }, { value: 'slides', label: 'Photo slideshow' }, { value: 'video', label: 'Background video' }]} />
           <Field label="Seconds per photo" type="number" value={hero.slideSeconds} onChange={set('hero', 'slideSeconds')} />
           <Field label="Small line above the title" value={hero.eyebrow} onChange={set('hero', 'eyebrow')} />
         </div>
@@ -79,6 +79,7 @@ export default function AdminHome() {
           <Toggle label="Show camera details (REC, timecode)" checked={hero.showHud} onChange={set('hero', 'showHud')} />
           <Field label="Camera text, top right" value={hero.hudRight} onChange={set('hero', 'hudRight')} />
         </div>
+        {hero.mode === 'tunnel' && <p className="apf-note">The tunnel uses up to 18 photos from Admin → Gallery automatically.</p>}
         {hero.mode === 'video'
           ? <div className="apf-grid">
             <Video label="Background video" hint="Upload an MP4 / WebM / MOV, or paste a YouTube or Drive link. Plays muted on a loop." value={hero.video} onChange={set('hero', 'video')} />

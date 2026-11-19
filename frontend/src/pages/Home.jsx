@@ -6,6 +6,7 @@ import { getPublicFeedback, getPublicGallery, getPublicPageContent, getPublicSer
 import { defaultHomeContent, isActive, mergeHomeContent, safeHref } from '../data/homeContent.js'
 import { sizedImage } from '../utils/media.js'
 import { getStoryCover, getVideoPoster, getYouTubeBackgroundUrl, getYouTubeEmbedUrl, handleCoverError } from '../utils/youtube.js'
+import TunnelHero from '../components/TunnelHero.jsx'
 import '../../styles/home-editorial.css'
 
 const icons = { message: MessageCircle, calendar: CalendarCheck, camera: Camera, images: Images, heart: Heart, sparkles: Sparkles }
@@ -128,6 +129,51 @@ function Reviews({ items, copy }) {
   </section>
 }
 
+// Warp carousel: each frame bends, shrinks and sinks back the further it is from the centre of the strip.
+// Drag with the mouse or swipe to move it.
+function useWarpCarousel(ref, count) {
+  useEffect(() => {
+    const strip = ref.current
+    if (!strip || !count) return undefined
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    let frame = 0
+    const warp = () => {
+      frame = 0
+      if (reduce) return
+      const box = strip.getBoundingClientRect()
+      const centre = box.left + box.width / 2
+      for (const card of strip.children) {
+        const r = card.getBoundingClientRect()
+        const offset = Math.max(-1.6, Math.min(1.6, (r.left + r.width / 2 - centre) / (box.width / 2)))
+        const a = Math.abs(offset)
+        card.style.transform = `perspective(1100px) rotateY(${(-offset * 26).toFixed(2)}deg) translateZ(${(-a * 110).toFixed(1)}px) scale(${(1 - a * 0.08).toFixed(3)})`
+        card.style.filter = `brightness(${(1 - a * 0.28).toFixed(3)})`
+      }
+    }
+    const onMove = () => { if (!frame) frame = requestAnimationFrame(warp) }
+    let dragging = false
+    let startX = 0
+    let startLeft = 0
+    const down = (event) => { if (event.pointerType !== 'mouse') return; dragging = true; startX = event.clientX; startLeft = strip.scrollLeft; strip.classList.add('is-dragging') }
+    const move = (event) => { if (dragging) strip.scrollLeft = startLeft - (event.clientX - startX) }
+    const up = () => { dragging = false; strip.classList.remove('is-dragging') }
+    warp()
+    strip.addEventListener('scroll', onMove, { passive: true })
+    window.addEventListener('resize', onMove)
+    strip.addEventListener('pointerdown', down)
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    return () => {
+      strip.removeEventListener('scroll', onMove)
+      window.removeEventListener('resize', onMove)
+      strip.removeEventListener('pointerdown', down)
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      cancelAnimationFrame(frame)
+    }
+  }, [ref, count])
+}
+
 export default function Home() {
   const [saved, setSaved] = useState(null)
   const [gallery, setGallery] = useState([])
@@ -158,6 +204,8 @@ export default function Home() {
   const heroVideo = hero.mode === 'video' ? (hero.video || galleryHeroVideo?.video) : ''
   const heroPoster = hero.videoPoster || (galleryHeroVideo && getStoryCover(galleryHeroVideo)) || slides[0]?.image
 
+  // Tunnel hero: up to 18 photos from the gallery, or the hero slides when the gallery is empty.
+  const tunnelPhotos = (photoStories.length ? photoStories.flatMap((item) => (item.images?.length ? item.images : [item.image])) : slides.map((slide) => slide.image)).filter(Boolean).slice(0, 18)
   const words = marquee.words.filter((word) => isActive(word) && word.text)
   const workItems = work.source === 'custom'
     ? work.items.filter((item) => isActive(item) && item.image).map((item) => ({ ...item, link: item.link || '/portfolio' }))
@@ -175,13 +223,25 @@ export default function Home() {
   const introPhoto = intro.photo || portrait?.image || photoStories[0]?.image
   const bodyParagraphs = (intro.body || '').split(/\n\s*\n/).filter((line) => line.trim())
 
+  useWarpCarousel(strip, workItems.length)
+
   function scrollStrip(direction) {
     const el = strip.current
     if (el) el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' })
   }
 
   return <div className="hm-page">
-    {hero.show !== false && <section className="hm-hero">
+    {hero.show !== false && hero.mode === 'tunnel' && <TunnelHero photos={tunnelPhotos}>
+        {hero.eyebrow && <p className="hm-eyebrow hm-rise"><span />{hero.eyebrow}</p>}
+        <h1 className="hm-rise hm-rise-2"><Rich text={hero.title} /></h1>
+        {hero.text && <p className="hm-hero-text hm-rise hm-rise-3">{hero.text}</p>}
+        <div className="hm-hero-actions hm-rise hm-rise-4">
+          {hero.primaryLabel && <SmartLink to={hero.primaryLink} fallback="/portfolio" className="hm-btn hm-btn-gold">{hero.primaryLabel} <ArrowUpRight size={18} /></SmartLink>}
+          {hero.secondaryLabel && <SmartLink to={hero.secondaryLink} fallback="/contact" className="hm-btn hm-btn-ghost">{hero.secondaryLabel}</SmartLink>}
+        </div>
+    </TunnelHero>}
+
+    {hero.show !== false && hero.mode !== 'tunnel' && <section className="hm-hero">
       {heroVideo ? <BackgroundVideo src={heroVideo} poster={heroPoster} /> : <Slides slides={slides.length ? slides : defaultHomeContent.hero.slides} seconds={hero.slideSeconds} />}
       <div className="hm-hero-shade" aria-hidden="true" />
       <div className="hm-viewfinder" aria-hidden="true">
