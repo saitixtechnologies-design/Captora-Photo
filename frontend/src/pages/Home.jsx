@@ -233,6 +233,67 @@ function ServiceStrips({ items }) {
   </div>
 }
 
+// Featured film: a cinema screen that opens wider as you scroll to it, with film sprockets, viewfinder corners,
+// a running REC timecode and a play button that follows the cursor around the frame.
+function FeaturedFilm({ film, copy, onPlay }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return undefined
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const box = node.getBoundingClientRect()
+      const progress = Math.min(1, Math.max(0, (window.innerHeight - box.top) / (window.innerHeight * .9)))
+      node.style.setProperty('--open', progress.toFixed(3))
+    }
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(frame) }
+  }, [])
+  const follow = (event) => {
+    if (event.pointerType !== 'mouse') return
+    const box = event.currentTarget.getBoundingClientRect()
+    event.currentTarget.style.setProperty('--mx', (event.clientX - box.left - box.width / 2) + 'px')
+    event.currentTarget.style.setProperty('--my', (event.clientY - box.top - box.height / 2) + 'px')
+  }
+  const reset = (event) => { event.currentTarget.style.setProperty('--mx', '0px'); event.currentTarget.style.setProperty('--my', '0px') }
+  return <section className="hm-fm" ref={ref} data-reveal>
+    <button type="button" className="hm-fm-screen" onClick={onPlay} onPointerMove={follow} onPointerLeave={reset} aria-label={'Play film: ' + film.title}>
+      {film.poster && <img src={sizedImage(film.poster, 2000)} alt="" loading="lazy" onError={handleCoverError} />}
+      <span className="hm-fm-shade" />
+      <span className="hm-fm-sprockets is-top" /><span className="hm-fm-sprockets is-bottom" />
+      <span className="hm-fm-corners" />
+      <span className="hm-fm-hud is-left"><b className="hm-rec" />REC <Timecode /></span>
+      <span className="hm-fm-hud is-right">4K · 24 FPS</span>
+      <span className="hm-fm-copy">
+        {copy.eyebrow && <span className="hm-fm-eyebrow">{copy.eyebrow}</span>}
+        <strong className="hm-fm-title">{film.title}</strong>
+      </span>
+      <span className="hm-fm-play"><span className="hm-fm-ring"><svg viewBox="0 0 120 120"><defs><path id="hm-fm-path" d="M60 60 m-48 0 a48 48 0 1 1 96 0 a48 48 0 1 1 -96 0" /></defs><text fontSize="11"><textPath href="#hm-fm-path">{(copy.buttonLabel || 'Watch the film') + ' · ' + (copy.buttonLabel || 'Watch the film') + ' · '}</textPath></text></svg></span><Play size={26} fill="currentColor" /></span>
+    </button>
+  </section>
+}
+
+// Client logos under a spotlight: the wall sits dim and a soft light follows the cursor (and drifts on its own on phones).
+function Spotlight({ image, alt }) {
+  const move = (event) => {
+    const box = event.currentTarget.getBoundingClientRect()
+    event.currentTarget.style.setProperty('--sx', ((event.clientX - box.left) / box.width * 100).toFixed(1) + '%')
+    event.currentTarget.style.setProperty('--sy', ((event.clientY - box.top) / box.height * 100).toFixed(1) + '%')
+    event.currentTarget.classList.add('is-tracking')
+  }
+  const leave = (event) => event.currentTarget.classList.remove('is-tracking')
+  const src = sizedImage(image, 2000)
+  return <div className="hm-sl" onPointerMove={move} onPointerLeave={leave}>
+    <img className="hm-sl-dim" src={src} alt={alt || 'Brands and clients photographed by Captora'} loading="lazy" />
+    <img className="hm-sl-lit" src={src} alt="" aria-hidden="true" loading="lazy" />
+    <span className="hm-sl-hint" aria-hidden="true">Move to light up</span>
+  </div>
+}
+
 export default function Home() {
   const [saved, setSaved] = useState(null)
   const [gallery, setGallery] = useState([])
@@ -371,18 +432,7 @@ export default function Home() {
       <CategoryIndex cards={categoryCards} />
     </section>}
 
-    {filmCopy.show !== false && featuredFilm && <section className="hm-film" data-reveal>
-      <button type="button" className="hm-film-frame" onClick={() => setFilm(featuredFilm)} aria-label={'Play film: ' + featuredFilm.title}>
-        {featuredFilm.poster && <img src={sizedImage(featuredFilm.poster, 2000)} alt="" loading="lazy" onError={handleCoverError} />}
-        <span className="hm-film-shade" />
-        <span className="hm-film-copy">
-          {filmCopy.eyebrow && <span className="hm-eyebrow hm-eyebrow-center"><span />{filmCopy.eyebrow}<span /></span>}
-          <strong>{featuredFilm.title}</strong>
-          <span className="hm-film-play"><Play size={30} fill="currentColor" /></span>
-          {filmCopy.buttonLabel && <small>{filmCopy.buttonLabel}</small>}
-        </span>
-      </button>
-    </section>}
+    {filmCopy.show !== false && featuredFilm && <FeaturedFilm film={featuredFilm} copy={filmCopy} onPlay={() => setFilm(featuredFilm)} />}
 
     {servicesCopy.show !== false && services.length > 0 && <section className="hm-services hm-wrap" data-reveal>
       <div className="hm-section-head">
@@ -397,13 +447,13 @@ export default function Home() {
         <div className="hm-section-head hm-section-head-center">
           <div><Eyebrow text={process.eyebrow} center /><h2><Rich text={process.title} /></h2></div>
         </div>
-        <ol className={'hm-steps count-' + steps.length}>
+        <ol className={'hm-tk count-' + steps.length}>
           {steps.map((step, index) => {
             const Icon = icons[step.icon] || Camera
-            return <li key={step.id || index}>
-              <span className="hm-step-num">{String(index + 1).padStart(2, '0')}</span>
-              <span className="hm-step-icon"><Icon size={24} strokeWidth={1.4} /></span>
-              <strong>{step.title}</strong>
+            return <li key={step.id || index} className="hm-tk-card" style={{ '--i': index }}>
+              <span className="hm-tk-top"><span className="hm-tk-icon"><Icon size={22} strokeWidth={1.5} /></span><span className="hm-tk-label">Step</span></span>
+              <span className="hm-tk-num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <strong className="hm-tk-title">{step.title}</strong>
               <p>{step.text}</p>
             </li>
           })}
@@ -415,7 +465,7 @@ export default function Home() {
 
     {clients.show !== false && clients.image && <section className="hm-clients" data-reveal>
       <Eyebrow text={clients.eyebrow} center />
-      <div className="hm-clients-img"><img src={sizedImage(clients.image, 2000)} alt={clients.alt || 'Brands and clients photographed by Captora'} loading="lazy" /></div>
+      <Spotlight image={clients.image} alt={clients.alt} />
     </section>}
 
     {film && <FilmModal film={film} onClose={() => setFilm(null)} />}

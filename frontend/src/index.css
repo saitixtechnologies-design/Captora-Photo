@@ -706,7 +706,7 @@ html { scroll-padding-top: var(--captora-header-height); }
 /* Headings, titles and the wordmark switch the variable, so everything inside them (like <em>) follows. */
 h1, h2, h3, h4, blockquote, legend,
 .cn-logo-name, .cf-brand, .pl-brand, .hm-frame-meta strong, .hm-service strong, .hm-steps strong, .hm-cat-name, .hm-cx-name, .hm-sx-title, .hm-sx-vert,
-.hm-frame-more, .hm-film-copy strong, .gl-card-info strong, .gl-stats strong, .sv-promise-card strong, .ab-value strong,
+.hm-frame-more, .hm-film-copy strong, .hm-fm-title, .hm-tk-title, .hm-tk-num, .gl-card-info strong, .gl-stats strong, .sv-promise-card strong, .ab-value strong,
 .ct-steps strong, .ct-sent h3, .wd-chapter strong, .wd-tile-info strong, .wd-film-copy strong, .admin-page-heading h2 { --site-font: var(--heading-font); }
 html body *:not(.pf-page):not(.pf-page *):not(.hm-signature):not(.ab-signature):not(.sf-script):not(svg):not(svg *) { font-family: var(--site-font) !important; }
 /* Arial is wider and plainer than the old serif headings: relax the tight spacing and give titles weight. */
