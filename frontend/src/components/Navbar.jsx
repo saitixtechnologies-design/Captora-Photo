@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
-import { Aperture, ArrowUpRight, Mail, Phone } from 'lucide-react'
+import { ArrowUpRight, Mail, Phone } from 'lucide-react'
 import { FaInstagram, FaWhatsapp, FaYoutube } from 'react-icons/fa'
 import '../styles/navbar.css'
 
@@ -50,7 +50,13 @@ function Navbar() {
     <header className={'cn-header' + (solid ? ' is-solid' : ' is-clear') + (open ? ' is-open' : '')}>
       <div className="cn-shell">
         <Link to="/" className="cn-logo" aria-label="Captora Photography and Films home">
-          <span className="cn-logo-mark"><Aperture size={22} strokeWidth={1.4} /></span>
+          <span className="cn-logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path className="cn-vf" d="M3 13V5a2 2 0 0 1 2-2h8M35 3h8a2 2 0 0 1 2 2v8M45 35v8a2 2 0 0 1-2 2h-8M13 45H5a2 2 0 0 1-2-2v-8" />
+              <text x="24" y="33" textAnchor="middle">C</text>
+              <circle className="cn-rec" cx="38" cy="10" r="2.6" />
+            </svg>
+          </span>
           <span className="cn-logo-text">
             <span className="cn-logo-name">captora<i>.</i></span>
             <span className="cn-logo-caption">Photography &amp; Films</span>

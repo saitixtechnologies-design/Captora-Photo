@@ -26,10 +26,17 @@
 
 /* Logo */
 .cn-logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.cn-logo-mark { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(198, 170, 123, .55); border-radius: 50%; color: var(--cn-gold); transition: transform .8s cubic-bezier(.2, .7, .2, 1), background .3s, color .3s; }
-.cn-logo:hover .cn-logo-mark { transform: rotate(120deg); background: var(--cn-gold); color: #141412; }
+/* Logo mark: viewfinder corners framing a bold C, with a blinking red "recording" dot. */
+.cn-logo-mark { position: relative; display: block; width: 44px; height: 44px; flex-shrink: 0; color: var(--cn-gold); }
+.cn-logo-mark svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.cn-vf { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; transform-origin: 24px 24px; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+.cn-logo-mark text { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 25px; font-weight: 800; fill: currentColor; transition: fill .3s; }
+.cn-rec { fill: #e5484d; animation: cn-rec 1.6s steps(1, end) infinite; }
+@keyframes cn-rec { 50% { opacity: .15; } }
+.cn-logo:hover .cn-vf { transform: scale(.84); }
+.cn-logo:hover .cn-logo-mark text { fill: #fff; }
 .cn-logo-text { display: flex; flex-direction: column; gap: 3px; }
-.cn-logo-name { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; line-height: .95; letter-spacing: -.05em; }
+.cn-logo-name { font-size: 24px; font-weight: 800; line-height: .95; letter-spacing: -.04em; }
 .cn-logo-name i { font-style: normal; color: var(--cn-gold); }
 /* em keeps this small brand caption out of the global text-size rule, which would make it wider than the logo. */
 .cn-logo-caption { font-size: .66em; font-weight: 600; letter-spacing: .26em; text-transform: uppercase; white-space: nowrap; color: var(--cn-muted); }
@@ -88,10 +95,12 @@
   .cn-shell { width: calc(100% - 40px); }
 }
 @media (max-width: 380px) {
-  .cn-logo-mark { width: 36px; height: 36px; }
+  .cn-logo-mark { width: 38px; height: 38px; }
   .cn-logo-name { font-size: 26px; }
   .cn-logo-caption { letter-spacing: .18em; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cn-header *, .cn-header { transition: none !important; }
 }
+
+@media (prefers-reduced-motion: reduce) { .cn-rec { animation: none; } }

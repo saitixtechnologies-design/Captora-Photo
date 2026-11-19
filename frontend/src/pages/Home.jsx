@@ -174,6 +174,65 @@ function useWarpCarousel(ref, count) {
   }, [ref, count])
 }
 
+// "What we photograph": a big type index on one side and an arched photo stage on the other.
+// Hovering (or tapping through) a row wipes its photo into the arch; when nobody hovers it plays through on its own.
+function CategoryIndex({ cards }) {
+  const [active, setActive] = useState(0)
+  const [paused, setPaused] = useState(false)
+  useEffect(() => {
+    if (paused || cards.length < 2 || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
+    const timer = window.setInterval(() => setActive((current) => (current + 1) % cards.length), 3200)
+    return () => window.clearInterval(timer)
+  }, [paused, cards.length])
+  const current = cards[Math.min(active, cards.length - 1)]
+  return <div className="hm-cx" onMouseLeave={() => setPaused(false)}>
+    <div className="hm-cx-stage" aria-hidden="true">
+      <div className="hm-cx-arch">
+        {cards.map((card, index) => <span key={card.id || index} className={'hm-cx-shot' + (index === active ? ' is-on' : '')}>
+          {card.image ? <img src={sizedImage(card.image, 900)} alt="" loading="lazy" /> : <i />}
+        </span>)}
+      </div>
+      <svg className="hm-cx-stamp" viewBox="0 0 120 120"><defs><path id="hm-cx-ring" d="M60 60 m-46 0 a46 46 0 1 1 92 0 a46 46 0 1 1 -92 0" /></defs><text fontSize="11.2"><textPath href="#hm-cx-ring">captora · every kind of story · </textPath></text><circle cx="60" cy="60" r="4" /></svg>
+      <span className="hm-cx-tag"><b>{String(active + 1).padStart(2, '0')}</b><span>/ {String(cards.length).padStart(2, '0')}</span><em key={active}>{current?.name}</em></span>
+    </div>
+    <ol className="hm-cx-list">
+      {cards.map((card, index) => <li key={card.id || index}>
+        <SmartLink to={card.link} fallback="/portfolio" className={'hm-cx-row' + (index === active ? ' is-on' : '')} onMouseEnter={() => { setActive(index); setPaused(true) }} onFocus={() => { setActive(index); setPaused(true) }}>
+          <span className="hm-cx-num">{String(index + 1).padStart(2, '0')}</span>
+          <span className="hm-cx-name">{card.name}</span>
+          {card.image && <img className="hm-cx-thumb" src={sizedImage(card.image, 200)} alt="" loading="lazy" />}
+          <span className="hm-cx-go"><ArrowUpRight size={20} /></span>
+        </SmartLink>
+      </li>)}
+    </ol>
+  </div>
+}
+
+// "What we do": photo strips side by side; the one you hover (or tap) opens wide with its story,
+// the rest stay as slim dark slices with their names standing upright. On phones the strips stack.
+function ServiceStrips({ items }) {
+  const [active, setActive] = useState(0)
+  return <div className="hm-sx">
+    {items.map((service, index) => {
+      const image = service.mediaType === 'video' ? getVideoPoster({ video: service.video, image: service.image }) : service.images?.[0] || service.image
+      const on = index === active
+      return <Link to="/services" key={service.id || index} className={'hm-sx-item' + (on ? ' is-on' : '')} aria-label={service.title}
+        onMouseEnter={() => setActive(index)} onFocus={() => setActive(index)}
+        onClick={(event) => { if (!on) { event.preventDefault(); setActive(index) } }}>
+        {image ? <img src={sizedImage(image, 1100)} alt="" loading="lazy" onError={handleCoverError} /> : <i />}
+        <span className="hm-sx-shade" />
+        <span className="hm-sx-num">{String(index + 1).padStart(2, '0')}</span>
+        <span className="hm-sx-vert" aria-hidden="true">{service.title}</span>
+        <span className="hm-sx-body">
+          <span className="hm-sx-title">{service.title}</span>
+          {service.description && <span className="hm-sx-text">{service.description}</span>}
+          <span className="hm-sx-more">Discover <ArrowUpRight size={16} /></span>
+        </span>
+      </Link>
+    })}
+  </div>
+}
+
 export default function Home() {
   const [saved, setSaved] = useState(null)
   const [gallery, setGallery] = useState([])
@@ -309,13 +368,7 @@ export default function Home() {
       <div className="hm-section-head hm-section-head-center">
         <div><Eyebrow text={categories.eyebrow} center /><h2><Rich text={categories.title} /></h2></div>
       </div>
-      <div className="hm-cat-grid">
-        {categoryCards.map((card, index) => <SmartLink to={card.link} fallback="/portfolio" className="hm-cat" key={card.id || index}>
-          {card.image ? <img src={sizedImage(card.image, 800)} alt={card.name} loading="lazy" /> : <i />}
-          <span className="hm-cat-num">{String(index + 1).padStart(2, '0')}</span>
-          <span className="hm-cat-name">{card.name}<ArrowUpRight size={20} /></span>
-        </SmartLink>)}
-      </div>
+      <CategoryIndex cards={categoryCards} />
     </section>}
 
     {filmCopy.show !== false && featuredFilm && <section className="hm-film" data-reveal>
@@ -336,18 +389,7 @@ export default function Home() {
         <div><Eyebrow text={servicesCopy.eyebrow} /><h2><Rich text={servicesCopy.title} /></h2></div>
         {servicesCopy.linkLabel && <Link to="/services" className="hm-link">{servicesCopy.linkLabel} <ArrowUpRight size={17} /></Link>}
       </div>
-      <div className="hm-service-grid">
-        {services.slice(0, Math.max(1, Number(servicesCopy.count) || 6)).map((service, index) => {
-          const image = service.mediaType === 'video' ? getVideoPoster({ video: service.video, image: service.image }) : service.images?.[0] || service.image
-          return <Link to="/services" className="hm-service" key={service.id || index}>
-            <span className="hm-service-img">{image && <img src={sizedImage(image, 900)} alt={service.title} loading="lazy" onError={handleCoverError} />}</span>
-            <span className="hm-service-num">{String(index + 1).padStart(2, '0')}</span>
-            <strong>{service.title}</strong>
-            <p>{service.description}</p>
-            <span className="hm-service-more">Discover <ArrowUpRight size={16} /></span>
-          </Link>
-        })}
-      </div>
+      <ServiceStrips items={services.slice(0, Math.max(1, Number(servicesCopy.count) || 6))} />
     </section>}
 
     {process.show !== false && steps.length > 0 && <section className="hm-process" data-reveal>
