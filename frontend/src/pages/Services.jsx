@@ -140,8 +140,9 @@ export default function Services() {
           <p className="sv-eyebrow sv-eyebrow-center"><span />Every booking includes<span /></p>
           <h2>Good photographs start with a <em>good feeling.</em></h2>
         </div>
-        <div className="sv-promise-grid">
-          {promises.map(({ icon: Icon, title, text }) => <div key={title} className="sv-promise-card">
+        <div className="sv-promise-grid sg-line">
+          {promises.map(({ icon: Icon, title, text }, index) => <div key={title} className="sv-promise-card sg-print" style={{ '--i': index }}>
+            <span className="sg-peg" aria-hidden="true" />
             <span className="sv-promise-icon"><Icon size={24} strokeWidth={1.5} /></span>
             <strong>{title}</strong>
             <p>{text}</p>

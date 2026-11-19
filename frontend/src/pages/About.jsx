@@ -132,8 +132,8 @@ export default function About() {
         <div><p className="ab-eyebrow"><span />The way we see it</p><h2>Our kind of <em>magic.</em></h2></div>
         <p>The little things we believe in, and bring to every story we have the privilege of telling.</p>
       </div>
-      <div className="ab-values-grid">
-        {values.map(({ icon: Icon, title, text }, index) => <article className="ab-value" key={title} data-reveal style={{ transitionDelay: `${index * 120}ms` }}>
+      <div className="ab-values-grid sg-fan" data-reveal style={{ '--n': values.length }}>
+        {values.map(({ icon: Icon, title, text }, index) => <article className="ab-value" key={title} style={{ '--i': index }}>
           <span className="ab-value-num">{String(index + 1).padStart(2, '0')}</span>
           <span className="ab-value-icon"><Icon size={24} strokeWidth={1.4} /></span>
           <strong>{title}</strong>

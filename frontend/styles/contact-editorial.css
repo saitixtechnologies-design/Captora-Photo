@@ -152,3 +152,35 @@
   .ct-envelope { display: none; }
   .ct-sent-sticker, .ct-sent h3, .ct-sent > p, .ct-sent-actions { animation: none; opacity: 1; transform: none; }
 }
+
+/* What happens next: a chat that types itself out */
+.ct-chat .ct-phone { max-width: 640px; margin: 0 auto; overflow: hidden; border: 1px solid rgba(198, 170, 123, .28); border-radius: 28px; background: rgba(255, 255, 255, .035); box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .8); }
+.ct-phone-bar { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid rgba(198, 170, 123, .2); }
+.ct-phone-avatar { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; color: #1c1b18; background: var(--ct-gold); font-weight: 800; }
+.ct-phone-bar strong { display: block; font-size: 16px; }
+.ct-phone-bar small { display: block; color: #9fd8a8; font-size: 13.5px; }
+.ct-chat .ct-phone ol { display: flex; flex-direction: column; gap: 14px; max-width: none; margin: 0; padding: 24px 20px 30px; }
+.ct-chat .ct-phone li { display: grid; padding: 0; border: 0; background: none; }
+.ct-chat li > * { grid-area: 1 / 1; }
+.ct-chat li.is-you > * { justify-self: end; }
+.ct-chat li.is-them > * { justify-self: start; }
+.ct-bubble { max-width: min(80%, 420px); padding: 12px 16px 8px; border-radius: 18px; }
+.ct-chat li.is-you .ct-bubble { color: #1c1b18; background: var(--ct-gold); border-bottom-right-radius: 4px; }
+.ct-chat li.is-them .ct-bubble { color: var(--ct-ink); background: #2c2a26; border-bottom-left-radius: 4px; }
+.ct-bubble-head { display: flex; align-items: center; gap: 8px; }
+.ct-chat .ct-bubble strong { margin: 0; font-size: 16px; }
+.ct-chat .ct-bubble p { margin: 4px 0 0; color: inherit; opacity: .85; font-size: 15.5px; }
+.ct-bubble small { display: block; margin-top: 4px; opacity: .6; font-size: 12px; text-align: right; }
+.ct-typing { display: inline-flex; align-items: center; gap: 5px; align-self: start; padding: 14px 16px; border-radius: 18px; background: #2c2a26; opacity: 0; }
+.ct-chat li.is-you .ct-typing { background: rgba(198, 170, 123, .35); }
+.ct-typing i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: ct-dot 1s ease-in-out infinite; }
+.ct-typing i:nth-child(2) { animation-delay: .15s; }
+.ct-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes ct-dot { 50% { transform: translateY(-4px); opacity: .5; } }
+.ct-chat .ct-bubble { opacity: 0; }
+.ct-chat.is-in .ct-typing { animation: ct-typing-life 1s ease both; animation-delay: calc(var(--i) * 1.4s); }
+.ct-chat.is-in .ct-bubble { animation: ct-pop .5s cubic-bezier(.3, 1.4, .5, 1) both; animation-delay: calc(var(--i) * 1.4s + 1s); }
+@keyframes ct-typing-life { 0% { opacity: 0; } 10% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes ct-pop { from { opacity: 0; transform: translateY(12px) scale(.94); } to { opacity: 1; transform: none; } }
+@media (max-width: 560px) { .ct-bubble { max-width: 88%; } .ct-chat .ct-phone ol { padding: 20px 14px 24px; } }
+@media (prefers-reduced-motion: reduce) { .ct-chat .ct-bubble { opacity: 1; animation: none !important; } .ct-chat .ct-typing { display: none; } }

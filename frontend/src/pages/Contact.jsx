@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router'
 import { ArrowDown, ArrowUpRight, CalendarCheck, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react'
 import { FaInstagram, FaYoutube } from 'react-icons/fa'
@@ -10,6 +10,36 @@ const channels = [
   { icon: Phone, label: 'Call', value: '+91 70848 61647', note: 'Talk to us directly', href: 'tel:+917084861647' },
   { icon: Mail, label: 'Email', value: 'captoraphotography@gmail.com', note: 'For detailed briefs', href: 'mailto:captoraphotography@gmail.com?subject=Photography%20enquiry' },
 ]
+
+// "What happens next" as a short chat between you and Captora that types itself out once it is on screen.
+function NextSteps() {
+  const ref = useRef(null)
+  const [seen, setSeen] = useState(() => typeof window === 'undefined' || !('IntersectionObserver' in window))
+  useEffect(() => {
+    if (seen || !ref.current) return undefined
+    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setSeen(true); observer.disconnect() } }, { threshold: 0.35 })
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [seen])
+  return <section className={'ct-steps ct-chat' + (seen ? ' is-in' : '')} ref={ref}>
+    <div className="ct-wrap">
+      <p className="ct-eyebrow ct-eyebrow-center"><span />What happens next<span /></p>
+      <div className="ct-phone">
+        <div className="ct-phone-bar"><span className="ct-phone-avatar">C</span><span><strong>Captora</strong><small>online · usually replies in minutes</small></span></div>
+        <ol>
+          {nextSteps.map(({ icon: Icon, title, text }, index) => <li key={title} className={index % 2 ? 'is-them' : 'is-you'} style={{ '--i': index }}>
+            <span className="ct-typing" aria-hidden="true"><i /><i /><i /></span>
+            <span className="ct-bubble">
+              <span className="ct-bubble-head"><Icon size={16} strokeWidth={1.8} /><strong>{title}</strong></span>
+              <p>{text}</p>
+              <small>{['10:02', '10:09', '10:15'][index % 3]} {index % 2 ? '' : '✓✓'}</small>
+            </span>
+          </li>)}
+        </ol>
+      </div>
+    </div>
+  </section>
+}
 
 const nextSteps = [
   { icon: Send, title: 'You send a note', text: 'Share your date, place and what you have in mind.' },
@@ -70,19 +100,7 @@ function Contact() {
       </div>
     </section>
 
-    <section className="ct-steps">
-      <div className="ct-wrap">
-        <p className="ct-eyebrow ct-eyebrow-center"><span />What happens next<span /></p>
-        <ol>
-          {nextSteps.map(({ icon: Icon, title, text }, index) => <li key={title}>
-            <span className="ct-step-icon"><Icon size={22} strokeWidth={1.5} /></span>
-            <span className="ct-step-num">{String(index + 1).padStart(2, '0')}</span>
-            <strong>{title}</strong>
-            <p>{text}</p>
-          </li>)}
-        </ol>
-      </div>
-    </section>
+    <NextSteps />
   </main>
 }
 

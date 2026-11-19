@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Check, Heart, Play, Quote, Star, X } from 'lucide-react'
@@ -78,6 +78,29 @@ function FilmModal({ film, onClose }) {
   </div>, document.body)
 }
 
+// A paragraph whose words light up one by one as it scrolls through the screen.
+function LitText({ text }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return undefined
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const box = node.getBoundingClientRect()
+      const progress = (window.innerHeight * 0.85 - box.top) / (window.innerHeight * 0.5 + box.height)
+      node.style.setProperty('--p', Math.min(1.05, Math.max(0, progress)).toFixed(3))
+    }
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(frame) }
+  }, [])
+  const words = text.split(' ')
+  return <p className="sg-lit" ref={ref}>{words.map((word, index) => <span key={index} style={{ '--w': (index / words.length).toFixed(3) }}>{word} </span>)}</p>
+}
+
 export default function WeddingPhotography() {
   const [gallery, setGallery] = useState([])
   const [service, setService] = useState(null)
@@ -130,7 +153,7 @@ export default function WeddingPhotography() {
       <div className="wd-intro-grid">
         <h2>Not just how it looked.<br /><em>How it felt.</em></h2>
         <div>
-          <p>Your wedding is made of a thousand little moments — some grand, some wonderfully ordinary. We photograph them quietly and with care, so the collection feels unmistakably yours.</p>
+          <LitText text="Your wedding is made of a thousand little moments — some grand, some wonderfully ordinary. We photograph them quietly and with care, so the collection feels unmistakably yours." />
           <ul className="wd-points">
             <li><Heart size={16} /> Candid moments, gently guided portraits</li>
             <li><Heart size={16} /> Every ritual and every family face</li>
@@ -221,6 +244,7 @@ export default function WeddingPhotography() {
     </section>}
 
     <section className="wd-cta wd-wrap" data-reveal>
+      <span className="sg-seal" aria-hidden="true"><span>C</span></span>
       <p className="wd-eyebrow wd-eyebrow-center"><span />Your story starts here<span /></p>
       <h2>Shall we make something <em>timeless?</em></h2>
       <p>Tell us about your date, your people and the moments you want to remember.</p>

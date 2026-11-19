@@ -62,7 +62,10 @@ export default function Feedback() {
 
   return (
     <div className="light-page feedback-page">
-      <section className="feedback-hero wrap">
+      <section className="feedback-hero wrap sg-fb">
+        <svg className="sg-fb-quote" viewBox="0 0 100 80" aria-hidden="true"><text x="50" y="112" textAnchor="middle">“</text></svg>
+        <span className="sg-fb-stars" aria-hidden="true">{[0, 1, 2, 3, 4].map((i) => <Star key={i} size={26} fill="currentColor" style={{ '--i': i }} />)}</span>
+        <svg className="sg-fb-badge" viewBox="0 0 120 120" aria-hidden="true"><defs><path id="sg-fb-ring" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0" /></defs><text fontSize="11"><textPath href="#sg-fb-ring">real words · real people · real stories · </textPath></text></svg>
         <p className="eyebrow">A NOTE FROM YOU</p>
         <h1>Your story, <em>in your words.</em></h1>
         <p className="feedback-lede">If Captora was part of a moment that matters to you, we’d love to hear how it felt. Your words help future clients know what to expect.</p>
