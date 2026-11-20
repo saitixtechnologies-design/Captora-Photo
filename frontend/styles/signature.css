@@ -229,3 +229,38 @@
 @media (min-width: 761px) and (max-width: 1100px) {
   .ab-page .sg-fan .ab-value { flex-basis: 31%; margin: 0 -8px; padding: 30px 24px; transform-origin: 50% 140%; transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 4deg)); }
 }
+
+/* ---------- Gallery: negative-film filter bar ---------- */
+.gl-page .gl-filters-bar.sg-negative { padding: 22px 0; background: #161512 !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.gl-filters-bar.sg-negative::before, .gl-filters-bar.sg-negative::after { content: ''; position: absolute; left: 0; right: 0; height: 8px; background: repeating-linear-gradient(90deg, transparent 0 12px, rgba(245, 241, 233, .55) 12px 24px, transparent 24px 36px); opacity: .5; }
+.gl-filters-bar.sg-negative::before { top: 6px; }
+.gl-filters-bar.sg-negative::after { bottom: 6px; }
+.sg-negative .gl-chip { border-color: rgba(198, 170, 123, .3); border-radius: 6px; color: #e8e2d6; background: rgba(255, 255, 255, .03); font-weight: 600; }
+.sg-negative .gl-chip small { border-radius: 4px; color: #c6aa7b; background: rgba(198, 170, 123, .14); }
+.sg-negative .gl-chip:hover { border-color: #c6aa7b; }
+.sg-negative .gl-chip.is-active { border-color: #c6aa7b; color: #141412; background: #c6aa7b; }
+.sg-negative .gl-chip.is-active small { color: #f5f1e9; background: #141412; }
+
+/* ---------- Gallery: viewfinder hover on cards ---------- */
+.sg-vf { position: absolute; inset: 14px; pointer-events: none; }
+.sg-vf i { position: absolute; width: 22px; height: 22px; border: 0 solid #fff; opacity: 0; transition: transform .45s cubic-bezier(.2, .7, .2, 1), opacity .3s; }
+.sg-vf i:nth-child(1) { top: 0; left: 0; border-width: 2px 0 0 2px; transform: translate(-12px, -12px); }
+.sg-vf i:nth-child(2) { top: 0; right: 0; border-width: 2px 2px 0 0; transform: translate(12px, -12px); }
+.sg-vf i:nth-child(3) { bottom: 0; left: 0; border-width: 0 0 2px 2px; transform: translate(-12px, 12px); }
+.sg-vf i:nth-child(4) { bottom: 0; right: 0; border-width: 0 2px 2px 0; transform: translate(12px, 12px); }
+.gl-card:hover .sg-vf i, .gl-card:focus-visible .sg-vf i { opacity: 1; transform: none; }
+.sg-light { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle 220px at var(--lx, 50%) var(--ly, 40%), rgba(255, 244, 222, .22), transparent 70%); opacity: 0; transition: opacity .35s; mix-blend-mode: soft-light; }
+.gl-card:hover .sg-light { opacity: 1; }
+
+/* ---------- Gallery: projection room for the film ---------- */
+.gl-film.sg-projector { position: relative; isolation: isolate; overflow: hidden; gap: 0; height: auto; min-height: clamp(400px, 36vw, 540px); padding: clamp(18px, 2.4vw, 34px); }
+.sg-projector .gl-film-media { border-radius: 10px; box-shadow: 0 0 0 1px rgba(255, 240, 210, .12), 0 0 80px rgba(255, 228, 180, .16); }
+.sg-beam { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(255, 232, 190, .16), transparent 70%); }
+.sg-flicker { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: rgba(255, 246, 228, .05); animation: sg-flicker 3.4s steps(2, end) infinite; }
+@keyframes sg-flicker { 0%, 100% { opacity: 0; } 8% { opacity: 1; } 10% { opacity: 0; } 46% { opacity: .7; } 48% { opacity: 0; } }
+.sg-reels { display: flex; gap: 10px; margin-bottom: 22px; }
+.sg-reels i { width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle, #c6aa7b 0 5px, transparent 6px), conic-gradient(from 0deg, #c6aa7b 0 20deg, transparent 20deg 60deg, #c6aa7b 60deg 80deg, transparent 80deg 120deg, #c6aa7b 120deg 140deg, transparent 140deg 180deg, #c6aa7b 180deg 200deg, transparent 200deg 240deg, #c6aa7b 240deg 260deg, transparent 260deg 300deg, #c6aa7b 300deg 320deg, transparent 320deg); box-shadow: inset 0 0 0 2px #c6aa7b; opacity: .85; animation: hm-sg-spin 3s linear infinite; }
+.sg-reels i:last-child { width: 34px; height: 34px; align-self: flex-end; animation-duration: 2.2s; }
+@media (max-width: 900px) { .gl-film.sg-projector { padding: 14px; } }
+@media (hover: none), (pointer: coarse), (max-width: 760px) { .sg-flicker { animation: none; display: none; } .sg-light { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sg-flicker, .sg-reels i { animation: none !important; } }

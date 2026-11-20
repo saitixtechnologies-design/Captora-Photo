@@ -77,6 +77,16 @@ function Viewer({ items, start, onClose }) {
   </div>, document.body)
 }
 
+// Desktop only: a soft light on the card under the cursor.
+function followLight(event) {
+  if (event.pointerType !== 'mouse') return
+  const card = event.target.closest?.('.gl-card')
+  if (!card) return
+  const box = card.getBoundingClientRect()
+  card.style.setProperty('--lx', ((event.clientX - box.left) / box.width * 100).toFixed(1) + '%')
+  card.style.setProperty('--ly', ((event.clientY - box.top) / box.height * 100).toFixed(1) + '%')
+}
+
 export default function Gallery() {
   const [items, setItems] = useState([])
   const [category, setCategory] = useState(ALL)
@@ -140,7 +150,7 @@ export default function Gallery() {
         <p className="gl-head-text">Choose a category, then open any story to see every photograph or play the film.</p>
       </div>
 
-      <div className="gl-filters-bar">
+      <div className="gl-filters-bar sg-negative">
         <div className="gl-wrap">
           <div className="gl-filters" role="toolbar" aria-label="Filter by category">
             {[ALL, ...counts.keys()].map((name) => <button key={name} type="button" className={'gl-chip' + (category === name ? ' is-active' : '')} aria-pressed={category === name} onClick={() => choose(name)}>
@@ -151,7 +161,7 @@ export default function Gallery() {
       </div>
 
       <div className="gl-wrap">
-        {shown.length > 0 ? <div className="gl-masonry sg-deal" key={category}>
+        {shown.length > 0 ? <div className="gl-masonry sg-deal" key={category} onPointerMove={followLight}>
           {shown.map((item, index) => {
             const isVideo = item.type === 'video'
             const photos = isVideo ? 0 : item.images?.length || 1
@@ -160,6 +170,8 @@ export default function Gallery() {
                 ? <video src={item.video} poster={sizedImage(getVideoPoster(item), 800) || undefined} muted autoPlay loop playsInline preload="metadata" />
                 : <img src={imageOf(item, 900)} alt={item.title} loading="lazy" />}
               <span className="gl-card-shade" />
+              <span className="sg-vf" aria-hidden="true"><i /><i /><i /><i /></span>
+              <span className="sg-light" aria-hidden="true" />
               {isVideo && <span className="gl-card-play"><Play size={20} fill="currentColor" /></span>}
               <span className="gl-card-badge">{isVideo ? 'Film' : <><Images size={13} /> {photos}</>}</span>
               <span className="gl-card-info">
@@ -174,11 +186,14 @@ export default function Gallery() {
       </div>
     </section>
 
-    {film && <section className="gl-film">
+    {film && <section className="gl-film sg-projector">
+      <span className="sg-beam" aria-hidden="true" />
       <div className="gl-film-media">
+        <span className="sg-flicker" aria-hidden="true" />
         {getYouTubeEmbedUrl(film.video) ? <img src={sizedImage(getVideoPoster(film), 1600)} alt="" loading="lazy" /> : <video src={film.video} poster={getVideoPoster(film) || undefined} muted autoPlay loop playsInline />}
       </div>
       <div className="gl-film-copy">
+        <span className="sg-reels" aria-hidden="true"><i /><i /></span>
         <p className="gl-eyebrow"><span />Beyond the still frame</p>
         <h2>{film.title} <em>in motion.</em></h2>
         <p>{film.category}{film.location ? ' · ' + film.location : ''}</p>
