@@ -94,4 +94,12 @@
 @media (max-width: 760px) {
   .sf-credit { justify-content: flex-start; }
 }
+/* Touch screens have no hover: show the email in full, with no open-and-close animation. */
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  .sf-credit { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 6px 10px; }
+  .sf-credit-name { grid-column: 1 / -1; font-size: 32px; transform: none; }
+  .sf-credit-mail, .sf-credit-mail:hover, .sf-credit-mail:focus-visible { grid-column: 1 / -1; justify-self: start; max-width: 100%; gap: 8px; padding: 0 14px 0 9px; transform: none; box-shadow: 2px 2px 0 var(--sf-ink); transition: none; }
+  .sf-credit-mail span { opacity: 1; overflow: hidden; text-overflow: ellipsis; transition: none; }
+}
 @media (prefers-reduced-motion: reduce) { .sf-credit-mail, .sf-credit-mail span { transition: none; } }
+.sf .sf-credit-mail, .sf .sf-credit-mail span { color: #fff !important; }

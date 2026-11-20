@@ -28,7 +28,8 @@ function App() {
   const { pathname } = useLocation()
   const isAdmin = pathname.startsWith('/admin')
   useEffect(() => {
-    if (isAdmin) return undefined
+    // Phones and tablets already scroll smoothly; a smooth-scroll loop there only costs battery and frames.
+    if (isAdmin || window.matchMedia?.('(hover: none), (pointer: coarse)').matches) return undefined
     const lenis = new Lenis({
       lerp: 0.14,
       smoothWheel: true,

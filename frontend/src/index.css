@@ -745,3 +745,18 @@ html body *:not(.pf-page):not(.pf-page *):not(.hm-signature):not(.ab-signature):
   .app-shell :is(.hm-hero-actions, .sv-hero-actions, .ct-hero-actions, .cf-shot-actions, .gl-film-actions, .sv-promise-cta, .ab-values-cta, .sv-copy-actions, .ct-submit) { gap: 10px !important; }
   .app-shell :is(.cf-shot-actions, .sv-promise-cta, .ab-values-cta) { justify-content: center; }
 }
+
+/* Phones and tablets: keep the look, drop the effects that repaint large areas every frame. */
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  html body * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .cn-header.is-solid { background: rgba(16, 16, 14, .97) !important; }
+  .hm-cx-tag { background: rgba(18, 18, 16, .8); }
+  .gl-filters-bar, .sv-index { background: #f5f1e9 !important; }
+  .hm-fm-screen { clip-path: none !important; }
+  .hm-fm-screen > img { transform: none !important; }
+  .hm-fm-sprockets, .sv-promise::before { animation: none !important; }
+  .hm-sl-lit { display: none; }
+  .hm-sl-dim { opacity: 1 !important; filter: none !important; }
+  .hm-sl-hint { display: none; }
+  .hm-work .hm-frame { transition: none; }
+}

@@ -73,15 +73,28 @@ function Slides({ slides, seconds }) {
   </div>
 }
 
+// A running camera timecode. It writes straight into the text (no React re-render) and only ticks while on screen.
 function Timecode() {
-  const [frames, setFrames] = useState(0)
+  const ref = useRef(null)
   useEffect(() => {
-    const timer = setInterval(() => setFrames((value) => value + 1), 1000 / 24)
-    return () => clearInterval(timer)
+    const node = ref.current
+    if (!node) return undefined
+    const pad = (n) => String(n).padStart(2, '0')
+    const start = performance.now()
+    let timer = 0
+    const tick = () => {
+      const frames = Math.floor((performance.now() - start) / (1000 / 24))
+      const total = Math.floor(frames / 24)
+      node.textContent = pad(Math.floor(total / 3600)) + ':' + pad(Math.floor(total / 60) % 60) + ':' + pad(total % 60) + ':' + pad(frames % 24)
+    }
+    const run = (on) => { window.clearInterval(timer); if (on) timer = window.setInterval(tick, 1000 / 12) }
+    tick()
+    const observer = 'IntersectionObserver' in window ? new IntersectionObserver(([entry]) => run(entry.isIntersecting)) : null
+    if (observer) observer.observe(node)
+    else run(true)
+    return () => { window.clearInterval(timer); observer?.disconnect() }
   }, [])
-  const total = Math.floor(frames / 24)
-  const pad = (n) => String(n).padStart(2, '0')
-  return <>{pad(Math.floor(total / 3600))}:{pad(Math.floor(total / 60) % 60)}:{pad(total % 60)}:{pad(frames % 24)}</>
+  return <span ref={ref}>00:00:00:00</span>
 }
 
 function FilmModal({ film, onClose }) {
@@ -136,19 +149,23 @@ function useWarpCarousel(ref, count) {
     const strip = ref.current
     if (!strip || !count) return undefined
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const touch = window.matchMedia?.('(hover: none), (pointer: coarse)').matches
     let frame = 0
     const warp = () => {
       frame = 0
       if (reduce) return
       const box = strip.getBoundingClientRect()
       const centre = box.left + box.width / 2
-      for (const card of strip.children) {
-        const r = card.getBoundingClientRect()
-        const offset = Math.max(-1.6, Math.min(1.6, (r.left + r.width / 2 - centre) / (box.width / 2)))
+      // Read every position first, then write, so the page is laid out once per frame instead of once per card.
+      const cards = [...strip.children]
+      const offsets = cards.map((card) => { const r = card.getBoundingClientRect(); return Math.max(-1.6, Math.min(1.6, (r.left + r.width / 2 - centre) / (box.width / 2))) })
+      cards.forEach((card, index) => {
+        const offset = offsets[index]
         const a = Math.abs(offset)
         card.style.transform = `perspective(1100px) rotateY(${(-offset * 26).toFixed(2)}deg) translateZ(${(-a * 110).toFixed(1)}px) scale(${(1 - a * 0.08).toFixed(3)})`
-        card.style.filter = `brightness(${(1 - a * 0.28).toFixed(3)})`
-      }
+        // Dimming with a filter repaints the photo every frame, which is too heavy for phones.
+        if (!touch) card.style.filter = `brightness(${(1 - a * 0.28).toFixed(3)})`
+      })
     }
     const onMove = () => { if (!frame) frame = requestAnimationFrame(warp) }
     let dragging = false
@@ -240,6 +257,8 @@ function FeaturedFilm({ film, copy, onPlay }) {
   useEffect(() => {
     const node = ref.current
     if (!node) return undefined
+    // On phones the screen simply starts open: reshaping a large photo on every scroll frame is too heavy there.
+    if (window.matchMedia?.('(hover: none), (pointer: coarse), (max-width: 760px)').matches) { node.style.setProperty('--open', '1'); return undefined }
     let frame = 0
     const update = () => {
       frame = 0
