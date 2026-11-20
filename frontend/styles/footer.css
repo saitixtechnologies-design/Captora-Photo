@@ -78,3 +78,20 @@
   .sf * { animation: none !important; transition: none !important; }
   .sf-mark text { stroke-dashoffset: 0; fill: var(--sf-ink); }
 }
+
+
+
+/* Designer credit, under Back to top */
+.sf-credit { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 10px; margin-top: 14px; color: var(--sf-muted); font-size: 13.5px; }
+.sf-credit-icon { display: grid; place-items: center; width: 30px; height: 30px; border: 2px solid var(--sf-ink); border-radius: 9px; color: var(--sf-ink); background: var(--sf-sun); box-shadow: 2px 2px 0 var(--sf-ink); transform: rotate(-6deg); }
+.sf-credit-text { font-weight: 600; letter-spacing: .02em; }
+.sf-credit-name { color: var(--sf-ink); font-family: 'Mrs Saint Delafield', cursive; font-size: 34px; line-height: 1; transform: translateY(3px); }
+.sf-credit-mail { display: inline-flex; align-items: center; gap: 0; max-width: 34px; height: 34px; padding: 0 7px; overflow: hidden; border: 2px solid var(--sf-ink); border-radius: 99px; color: var(--sf-cobalt-ink); background: var(--sf-cobalt); box-shadow: 2px 2px 0 var(--sf-ink); white-space: nowrap; text-decoration: none; transition: max-width .45s cubic-bezier(.2, .7, .2, 1), gap .3s, transform .25s, box-shadow .25s; }
+.sf-credit-mail svg { flex-shrink: 0; }
+.sf-credit-mail span { font-size: 13.5px; font-weight: 700; opacity: 0; transition: opacity .25s; }
+.sf-credit-mail:hover, .sf-credit-mail:focus-visible { max-width: 300px; gap: 8px; padding-right: 14px; transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--sf-ink); }
+.sf-credit-mail:hover span, .sf-credit-mail:focus-visible span { opacity: 1; transition-delay: .12s; }
+@media (max-width: 760px) {
+  .sf-credit { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .sf-credit-mail, .sf-credit-mail span { transition: none; } }

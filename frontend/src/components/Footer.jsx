@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react'
+import { ArrowUp, ArrowUpRight, Code2, Mail, MapPin, Phone } from 'lucide-react'
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaYoutube } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import { Link } from 'react-router'
@@ -98,6 +98,14 @@ function Footer() {
             <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
           </div>
           <button type="button" className="sf-top-btn" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top <ArrowUp size={15} /></button>
+        </div>
+        <div className="sf-credit">
+          <span className="sf-credit-icon" aria-hidden="true"><Code2 size={16} strokeWidth={2.2} /></span>
+          <span className="sf-credit-text">Designed &amp; developed by</span>
+          <span className="sf-script sf-credit-name">Sneha Barnwal</span>
+          <a className="sf-credit-mail" href="mailto:snehabarnwal731@gmail.com" title="snehabarnwal731@gmail.com" aria-label="Email Sneha Barnwal at snehabarnwal731@gmail.com">
+            <Mail size={16} strokeWidth={2.2} /><span>snehabarnwal731@gmail.com</span>
+          </a>
         </div>
       </div>
     </footer>
